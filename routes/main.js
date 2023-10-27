@@ -6,7 +6,6 @@ module.exports = function(app, shopData) {
         } else { next (); }
     }
 
-    const bcrypt = require('bcrypt');
     const saltRounds = 10;
 
 
