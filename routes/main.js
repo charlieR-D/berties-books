@@ -1,7 +1,13 @@
 module.exports = function(app, shopData) {
 
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+    const redirectLogin = (req, res, next) => {
+        if (!req.session.userId ) {
+          res.redirect('./login')
+        } else { next (); }
+    }
+
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
 
 
     // Handle our routes
@@ -11,7 +17,7 @@ const saltRounds = 10;
     app.get('/about',function(req,res){
         res.render('about.ejs', shopData);
     });
-    app.get('/search',function(req,res){
+    app.get('/search', redirectLogin, function(req,res){
         res.render("search.ejs", shopData);
     });
     app.get('/search-result', function (req, res) {
@@ -69,7 +75,7 @@ const saltRounds = 10;
 
 
 
-    app.get('/list', function(req, res) {
+    app.get('/list', redirectLogin, function(req, res) {
         let sqlquery = "SELECT * FROM books"; // query database to get all the books
         // execute sql query
         db.query(sqlquery, (err, result) => {
@@ -98,7 +104,7 @@ const saltRounds = 10;
 
 
 
-    app.get('/addbook', function (req, res) {
+    app.get('/addbook', redirectLogin, function (req, res) {
         res.render('addbook.ejs', shopData);
      });
  
@@ -160,16 +166,20 @@ const saltRounds = 10;
 
 
             if (err) {
-            // TODO: Handle error
+            // error message
             return console.log(err.message);
             }
             else if (result == true) {
-            // TODO: Send message
+
+                // Save user session here, when login is successful
+                req.session.userId = req.body.username;
+
+                // login successful
                 let message = 'Hello '+ ' ' + req.body.username + ' you are logged in'                
                 res.send(message);   
             }
             else {
-            // TODO: Send message
+                // login unsuccessful
                 let message = 'Login unsuccessful, please try again'
                 res.send(message);
          }
@@ -187,14 +197,14 @@ const saltRounds = 10;
 
            //page to display form for deleting user
 
-            app.get('/deleteuser', function (req,res) {
+            app.get('/deleteuser', redirectLogin, function (req,res) {
                 res.render('deleteuser.ejs', shopData);                                                                     
             });                           
 
 
            //delete a user from the database
 
-            app.post('/deleteduser', function (req,res) {
+            app.post('/deleteduser', redirectLogin, function (req,res) {
 
                 // Search for username match in database
                 let sqlquery = "DELETE FROM userdetails WHERE username = ?";
@@ -231,8 +241,17 @@ const saltRounds = 10;
                 }
             })
             }); 
+        
 
-
+            app.get('/logout', redirectLogin, (req,res) => {
+                req.session.destroy(err => {
+                if (err) {
+                  return res.redirect('./')
+                }
+                res.send('you are now logged out. <a href='+'./'+'>Home</a>');
+                })
+            })
+        
 
 }
 
