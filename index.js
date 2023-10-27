@@ -4,7 +4,6 @@ var ejs = require('ejs')
 var bodyParser= require ('body-parser')
 const mysql = require('mysql');
 var session = require ('express-session');
-const bcrypt = require('bcrypt');
 
 
 // Create the express application object
