@@ -184,6 +184,56 @@ const saltRounds = 10;
             }
   })
 }); 
+
+           //page to display form for deleting user
+
+            app.get('/deleteuser', function (req,res) {
+                res.render('deleteuser.ejs', shopData);                                                                     
+            });                           
+
+
+           //delete a user from the database
+
+            app.post('/deleteduser', function (req,res) {
+
+                // Search for username match in database
+                let sqlquery = "DELETE FROM userdetails WHERE username = ?";
+                let user = [req.body.username];
+
+
+                // execute sql query
+                db.query(sqlquery, user, (err, result) => {
+
+                if (err) {
+                    return console.error(err.message);
+
+                } else if(result.affectedRows > 0) {
+
+                    //this means user was deleted
+
+                    let sqlquery = "SELECT * FROM userdetails"; // query database to get all users
+                    // execute sql query
+                    db.query(sqlquery, (err, result) => {
+                        if (err) {
+                            res.redirect('./'); 
+                        }
+                        let newData = Object.assign({}, shopData, {availableUsers:result});
+                        console.log(newData)
+                        res.render("listusers.ejs", newData)
+                     });
+
+                } else {
+
+                     //No user found in database
+                     let message  = "username incorrect or not found";
+                     res.send(message);
+                   
+                }
+            })
+            }); 
+
+
+
 }
 
 
