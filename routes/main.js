@@ -9,6 +9,7 @@ module.exports = function(app, shopData) {
     const saltRounds = 10;
     const bcrypt = require('bcrypt');
 
+    const { check, validationResult } = require('express-validator');
 
 
 
@@ -41,7 +42,20 @@ module.exports = function(app, shopData) {
         res.render('register.ejs', shopData);                                                                     
     });                           
 
-    app.post('/registered', function (req,res) {
+    app.post('/registered',[check('email').isEmail()], [check('password').isLength(8)],function (req,res) {
+        
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.redirect('./register'); }
+        else { 
+
+        // Sanitize inputs
+        req.body.first = req.sanitize(req.body.first);
+        req.body.last = req.sanitize(req.body.last);
+        req.body.username = req.sanitize(req.body.username)
+        req.body.password = req.sanitize(req.body.password)
+        req.body.email = req.sanitize(req.body.email)
+
         const plainPassword = req.body.password;
 
 
@@ -71,9 +85,12 @@ module.exports = function(app, shopData) {
                 
                 res.send(result);            
             }
+        
         })
       })
+    }
     }); 
+
 
 
 
