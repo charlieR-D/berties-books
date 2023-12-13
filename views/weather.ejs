@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Weather Page for <%=shopName%></title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1>Weather Page - <%=shopName%></h1>
+    <%=message%>
+    <form method="POST" action="/weatherselected">
+        <p>City Name: <input id="city" type="text" name="city" value="London" /></p>
+        <input type="submit" value="Submit" />
+      </form>
+  </body>
+</html>

@@ -270,7 +270,93 @@ module.exports = function(app, shopData) {
                 res.send('you are now logged out. <a href='+'./'+'>Home</a>');
                 })
             })
+
+            app.get('/weather',function(req,res){
+
+                const request = require('request');
+          
+                let apiKey = 'acb4e7273bd55ab37a91440506ef093c';
+                let city = 'london';
+                // let city = req.query.city
+
+                let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+                             
+                request(url, function (err, response, body) {
+                  if(err){
+                    console.log('error:', error);
+                  } else {
+                    // res.send(body);
+                    // var weather = JSON.parse(body)
+
+                    // var wmsg = 'It is '+ weather.main.temp + ' degrees in '+ weather.name +
+                    //  '! <br> The humidity now is: ' + weather.main.humidity;
+
+                    //  res.send (wmsg);
+
+                     var weather = JSON.parse(body)
+                     if (weather!==undefined && weather.main!==undefined) {
+                        var wmsg = 'It is '+ weather.main.temp + 
+                           ' degrees in '+ weather.name +
+                           '!The humidity now is: ' + 
+                           weather.main.humidity;
+                        //    res.send (wmsg);
+
+                           let data = Object.assign({}, shopData, { message: wmsg });
+                           res.render('weather.ejs', data);
+
+                     }
+                     else {
+                        res.send ("No data found");
+                     }
+                     
+                  } 
+                });
+            });
+
+
+
         
+            app.post('/weatherselected', function (req,res) {
+
+                const request = require('request');
+          
+                let apiKey = 'acb4e7273bd55ab37a91440506ef093c';
+                let city = req.body.city
+
+                let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`
+                             
+                request(url, function (err, response, body) {
+                  if(err){
+                    console.log('error:', error);
+                  } else {
+                
+                     var weather = JSON.parse(body)
+                     if (weather!==undefined && weather.main!==undefined) {
+
+                    
+                var wmsg = `It is ${weather.main.temp} degrees in ${weather.name}!<br>
+                The humidity now is: ${weather.main.humidity}.<br>
+                Wind speed is: ${weather.wind.speed} meters per second`;
+
+
+                //Include wind direction if available
+                if (weather.wind.deg) {
+                     wmsg += `, <br>coming from ${weather.wind.deg} degrees.`;
+                    }
+
+                        let data = Object.assign({}, shopData, { message: wmsg });
+                        res.render('weather.ejs', data);
+
+                     }
+                     else {
+                        res.send ("No data found");
+                     }
+                     
+                  } 
+                });
+               
+
+            });    
 
 }
 
