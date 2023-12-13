@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TV Shows</title>
+    <link rel="stylesheet"  type="text/css" href="/main.css" />
+  </head>
+  <body>
+    <h1>Tv Shows - <%=shopName%></h1>
+      <ul>
+        <% allshows.forEach(function(show) { %>
+          <li><%= show.show.name %>, <%=show.show.language%>, <%=show.show.type%>, <%=show.show.url%> </li><br>
+        <% }) %>
+      </ul>
+  </body>
+</html>

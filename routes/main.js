@@ -358,6 +358,106 @@ module.exports = function(app, shopData) {
 
             });    
 
+
+
+            app.get('/api', function (req,res) {
+
+                // Query database to get all the books
+                // let sqlquery = "SELECT * FROM books"; 
+                let sqlquery = "SELECT * FROM books WHERE name LIKE '%" + req.query.keyword + "%'"; 
+        
+                // Execute the sql query
+                db.query(sqlquery, (err, result) => {
+                    if (err) {
+                        res.redirect('./');
+                    }
+                    // // Return results as a JSON object
+
+                    res.json(result);
+                });
+            });
+
+
+
+
+            app.get('/tvshows',function(req,res){
+            res.render('tvshows.ejs', shopData);
+            });
+
+
+
+
+
+       app.post('/tvshowssearch', function (req,res) {
+
+        const request = require('request');
+          
+        let term = req.body.search
+
+        let url = `https://api.tvmaze.com/search/shows?q=${term}`
+
+
+        request(url, function (err, response, body) {
+          if(err){
+            console.log('error:', error);
+          } else {
+
+
+             var tvshows = JSON.parse(body)
+
+             if (tvshows!==undefined && tvshows.length>0) {
+
+                   let data = Object.assign({}, shopData, {allshows:tvshows});
+                   console.log(data)
+                   res.render('tvshowresults.ejs', data);
+
+             }
+             else {
+                res.send ("No data found");
+             }
+             
+          } 
+        });
+ });    
+
+
+ 
+
+ app.get('/tvshowsselected', function (req,res) {
+
+    const request = require('request');
+      
+    let term = req.body.search
+
+    let url = `https://api.tvmaze.com/search/shows?q=${term}`
+
+
+    request(url, function (err, response, body) {
+      if(err){
+        console.log('error:', error);
+      } else {
+
+
+         var tvshows = JSON.parse(body)
+
+         if (tvshows!==undefined && tvshows.length>0) {
+
+               let data = Object.assign({}, shopData, {allshows:tvshows});
+               console.log(data)
+               res.render('tvshowresults.ejs', data);
+
+         }
+         else {
+            res.send ("No data found");
+         }
+         
+      } 
+    });
+});    
+
+
+
+
 }
 
 
